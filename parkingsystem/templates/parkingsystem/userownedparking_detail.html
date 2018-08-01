@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block content %}
+<div class="row">
+    <div class="col">
+        <h1>My parkingspace</h1>
+        <p class="center"><a href="{% url 'userparking-update' userownedparking.id %}"> Update</a> or 
+            <a href="{% url 'userparking-delete' userownedparking.id %}"> remove</a> your parkingspace</p>
+    </div>
+</div>
+  
+  
+  
+    <!--The div element for the map -->
+    <div class="col" id="map"></div>
+      <script>
+    
+    // Initialize and add the map
+      function initMap() {
+  // The location of Uluru
+      
+      var num1 = parseFloat("{{userownedparking.latitude}} ")
+      var num2 = parseFloat("{{userownedparking.longitude}}")
+
+      console.log(num1)
+      var uluru = {lat: num1, lng: num2};
+  // The map, centered at Uluru
+      var map = new google.maps.Map(document.getElementById('map'), {zoom: 16, center: uluru});
+  // The marker, positioned at Uluru
+      var marker = new google.maps.Marker({position: uluru, map: map});
+        
+      var infowindow = new google.maps.InfoWindow();
+
+      google.maps.event.addListener(marker, 'click', (function(marker){
+                return function() {
+
+                    infowindow.setContent("<p> Open: {{ userownedparking.opening_time }}  - {{ userownedparking.closing_time }}<br />" +
+                    "Price per hour: {{ userownedparking.price }}<br/>" +
+                    "Status: {{ userownedparking.status }}<br/>" +
+                    "Owner: {{ userownedparking.owner}} <br/>" +
+                    "<a href='{% url 'ticket-add' %}'> Buy ticket </a>" +
+                    "</p>");
+                    infowindow.open(map, marker);
+                }
+            })(marker));
+
+}
+
+  </script>
+
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAAbm5_fhoMiS2KutHvxdZlTbSf_rpxYcs&callback=initMap">
+    </script>
+{% endblock %}

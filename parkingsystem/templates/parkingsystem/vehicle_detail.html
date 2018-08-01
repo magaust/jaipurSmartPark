@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>{{ vehicle.registration_number }}</h1>
+
+<p> {{ vehicle.brand }}</p>
+<p>{{ vehicle.model }}</p>
+{% if vehicle.car %}
+<p>CAR</p>
+{% elif vehicle.motorbike %}
+<p>MOTORBIKE</p>
+{% endif %}
+
+<a href="{% url 'vehicle-update' vehicle.id %}"> Update vehicle</a>
+<a href="{% url 'vehicle-delete' vehicle.id %}"> Remove vehicle </a>
+
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Title: {{ parkinglot.name }}</h1>
+
+  <p><strong>Price:</strong>{{ parkinglot.price }}</a></p> <!-- author detail link not yet defined -->
+  <p><strong>Opening time:</strong>{{ parkinglot.opening_time }}  -  {{ parkinglot.closing_time }} </p>
+  <p><strong>Number of car spaces:</strong> {{ parkinglot.capacity_car }} </p>
+
+    {% if parkinglot.parkingspace_set.all %}
+    <ul>
+        {% for parkingspace in parkinglot.parkingspace_set.all %}
+            <li> <a href="{{ parkingspace.get_absolute_url }}">{{ parkingspace.id }}, {{ parkingspace.parking_type }} </a></li>
+        {% endfor %}
+    {% endif %}
+    </ul>
+
+  <p><strong>Number of bike spaces:</strong> {{ parkinglot.capacity_motorbike }} </p>
+  {% if parkinglot.car_taken >= parkinglot.capacity_car and parkinglot.mb_taken >= parkinglot.capacity_motorbike %} 
+        <p>The parkinglot is full</p>
+    {% else %}
+            <a href="{% url 'plticket' parkinglot.id %}"> Buy ticket</a>
+    {% endif %}
+    
+  <h3>Map</h3>
+  <!--The div element for the map -->
+  <div id="map"></div>
+    <script>
+  // Initialize and add the map
+    function initMap() {
+// The location of Uluru
+    
+    var num1 = parseFloat("{{parkinglot.latitude}} ")
+    var num2 = parseFloat("{{parkinglot.longitude}}")
+    var taken = {{parkinglot.car_taken}};
+    var avail = {{parkinglot.capacity_car}};
+
+    console.log(num1)
+    var pos = {lat: num1, lng: num2};
+// The map, centered at pos
+    var map = new google.maps.Map(document.getElementById('map'), {zoom: 16, center: pos});
+// The marker, positioned at pos
+    var marker = new google.maps.Marker({position: pos, map: map});
+
+    var infowindow = new google.maps.InfoWindow();
+    
+    google.maps.event.addListener(marker, 'click', (function(marker){
+                return function() {
+
+                    if ( taken < avail ) {
+                        infowindow.setContent("<p> Parkinglot: " + "{{ parkinglot.name }}" + "<br />" +
+                        "Opening hours: {{ parkinglot.opening_time }} - {{ parkinglot.closing_time}} <br />" +
+                        "Price per hour: {{parkinglot.price}} <br />" +
+                        "Space taken: {{ parkinglot.car_taken }} /  {{ parkinglot.capacity_car }} <br />" +
+                        "<a href='{% url 'ticket-add' %}'> Buy ticket </a>" +
+                        "</p>")
+                        ;
+                    } else{
+                        infowindow.setContent("<p> Parkinglot: " + "{{ parkinglot.name }}" + "<br />" +
+                        "Opening hours: {{ parkinglot.opening_time }} - {{ parkinglot.closing_time}} <br />" +
+                        "Price per hour: {{parkinglot.price}} <br />" +
+                        "Space taken: {{ parkinglot.car_taken }} /  {{ parkinglot.capacity_car }} <br />" +
+                        "</p>");
+                    }
+                    
+                    infowindow.open(map, marker);
+                }
+            })(marker));
+    };
+
+
+</script>
+
+<script async defer
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAAbm5_fhoMiS2KutHvxdZlTbSf_rpxYcs&callback=initMap">
+  </script>
+{% endblock %}

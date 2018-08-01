@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+    <h1 id="index-h1">Jaipur SmartPark</h1>
+    {% if user.is_authenticated %}
+        <div class="row">
+                <div class="col-10">
+                    <h2 class="vehicle-h2"> Vehicles</h2>
+                </div>
+                <div class="col-2">
+                    <a href="{% url 'vehicle-add' %}"> 
+                        <div>
+                            <i class="fa fa-plus fa-2x adder"></i>
+                        </div>  
+                    </a>
+                </div>
+            </div>
+        
+        <div class="row">
+            {% for vehicle in user.vehicle_set.all %}
+                <div class="col-4">
+                    {% if vehicle.car %}
+                    <a href="{{ vehicle.get_absolute_url }}">
+                        <div class="index-vehicle">
+                            <i class="fa fa-car fa-3x"></i>
+                            <p>{{ vehicle.registration_number }}</p>
+                        </div>
+                    </a>
+                    {% elif vehicle.motorbike %}
+                    <a href="{{ vehicle.get_absolute_url }}">
+                        <div class="index-vehicle">
+                            <i class="fa fa-motorcycle fa-3x"></i>
+                            <p>{{ vehicle.registration_number }}</p>
+                        </div>
+                    </a>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="line"></div>
+        
+        <div class="row">
+            <div class="col-10">
+                <h2 class="ticket-h2">Tickets</h2>
+            </div>
+            <div class="col-2">
+                <a href="{% url 'ticket-add' %}"> 
+                    <div>
+                        <i class="fa fa-plus fa-2x adder"></i>
+                    </div>  
+                </a>
+            </div>
+        </div>
+        <div class="row">  
+            {% for ticket in user_tickets|slice:":3" %}
+                <div class="col-4">
+                    <a href="{{ ticket.get_absolute_url }}">
+                        
+                        
+                            
+                        <div class="index-ticket">     
+                        
+                        {% if ticket.is_valid %}
+                            <i class="fas fa-ticket-alt fa-3x valid"></i>
+                            {% else %}
+                            <i class="fas fa-ticket-alt fa-3x"></i>
+                            {% endif %}
+                            <p>Ticket {{ticket.id}} </p>
+                            <p>{{ticket.vehicle}}</p>
+                            <p>Parkingspace address</p>
+                            {% if ticket.is_valid %}
+                            
+                            {% endif %}
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+        {% if user_tickets > 3 %}
+        <div class="row">
+            <a class="see-more" href="{% url 'tickets' %}"> See all..</a>
+        </div>
+        {% endif %}
+        <div class="line"></div>
+        
+            
+        
+        {% if not user.userownedparking %}
+        <div class="row">
+                <div class="col-10">
+                    <h2 class="ticket-h2">Parkingspace</h2>
+                </div>
+                <div class="col-2">
+                    <a href="{% url 'userparking-add' %}"> 
+                        <div>
+                            <i class="fa fa-plus fa-2x adder"></i>
+                        </div>  
+                    </a>
+                </div>
+            </div>
+
+                {% else %}
+        <h2>My parking space</h2>
+        <div class="row">
+        
+            <div class="col">
+                <a href="{{ user.userownedparking.get_absolute_url }}">
+                    <div class="index-parkingspace">
+                        <i class="fas fa-parking fa-3x"></i>
+                        <p>My parkingspace</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+    
+{% else %}
+
+<!-- include loginform/pop up form -->
+        <div class="row">
+            <div class="col">
+               <p class="center"> <a href="{% url 'login' %}">Login</a> or <a href="{% url 'signup' %}"> Signup</a></p>
+            </div>
+        </div>
+
+<p></p>
+
+
+{% endif %}
+</div>
+
+{% endblock %}

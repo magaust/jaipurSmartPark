@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+        <div class="col">
+            <h3>Delete vehicle {{vehicle.registration_number}}</h3>
+
+            <form  action="{% url 'vehicle-delete' vehicle.id %}" method="post">
+                {% csrf_token %}
+                {% include 'bootstrap-form.html' with form=form %}
+                    <button type="submit" class="btn btn-primary">Delete</button>
+
+            </form>
+
+        </div>
+    </div>
+
+{% endblock %}

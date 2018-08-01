@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+
+{% load static %}
+{% block javascript %}
+<script src="{% static 'js/ticket/ticket.js' %}"></script>
+<script src="{% static 'js/ticket/dropdown.js' %}"></script>
+<script src="https://www.paypalobjects.com/api/checkout.js"></script>
+<script src="{% static 'js/ticket/paypalbutton.js' %}"></script>
+
+{% endblock %}
+
+
+{% block content %}
+<h1>New ticket </h1>
+{% if user.is_authenticated %}
+
+{% load widget_tweaks %}
+<div>
+    <p id='psPrice'> Price per hour: {{parkingspace.price}} </p>
+</div>
+<form method="post" id="TicketForm" data-parkingspace-price-url="{% url 'ajax-load-ps-price' %}" data-parkinglot-price-url="{% url 'ajax-load-pl-price' %}" data-parkingspaces-url="{% url 'ajax-load-parkingspace' %}" data-vehicles-url="{% url 'ajax-load-vehicle' %}"  novalidate>
+    {% csrf_token %}
+
+    {% for hidden_field in form.hidden_fields %}
+        {{ hidden_field }}
+    {% endfor %}
+
+    {% if form.non_field_errors %}
+        <div class="alert alert-danger" role="alert">
+        {% for error in form.non_field_errors %}
+            {{ error }}
+        {% endfor %}
+        </div>
+    {% endif %}
+
+    {% for field in form.visible_fields %}
+        <div class="form-group">
+        {{ field.label_tag }}
+
+        {% if form.is_bound %}
+            {% if field.errors %}
+            {% render_field field class="form-control is-invalid" %}
+            {% for error in field.errors %}
+                <div class="invalid-feedback">
+                {{ error }}
+                </div>
+            {% endfor %}
+            {% else %}
+            {% render_field field class="form-control is-valid" %}
+            {% endif %}
+        {% else %}
+            {% render_field field class="form-control" %}
+        {% endif %}
+
+        {% if field.help_text %}
+            <small class="form-text text-muted">{{ field.help_text }}</small>
+        {% endif %}
+    </div>
+  {% endfor %}
+    <div>
+        <p>Price per hour: </p>
+        <p id="ticket-price"></p>
+    </div>
+    <div id="paypal-button"></div>
+
+</form>
+{% endif %}
+{% endblock %}

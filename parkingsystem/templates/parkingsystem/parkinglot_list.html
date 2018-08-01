@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Parking lot List</h1>
+    {% if user.is_authenticated %}
+
+    {% if parkinglot_list %}
+    <ul>
+      {% for parkinglot in parkinglot_list %}
+      <li>
+        <a href="{{ parkinglot.get_absolute_url }}">{{ parkinglot.name }}</a> ({{parkinglot.latitude}})
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+      <p>There are no parkinglots in the system.</p>
+    {% endif %}
+
+    {% if standaloneparkingspace_list %}
+    <ul>
+      {% for standaloneparkingspace in standaloneparkingspace_list %}
+      <li>hei</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% else %}
+    <p>You need to <a href="{% url 'login' %}">login</a> to see this</p>
+    {% endif %}  
+    
+    {% if user.is_staff %}
+    <a href="{% url 'parkinglot-add' %}"> Create a new parkinglot </a> <br>
+    <a href="{% url 'standalone-add' %}"> Create a new standalone parkingspace</a>
+    {% endif %}
+{% endblock %}

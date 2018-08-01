@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Ticket: {{ ticket.id }}</h1>
+  <p>Owner: {{ ticket.person }}</p>
+  <p>Vehicle: {{ ticket.vehicle }}, {{ticket.vehicle.brand}} {{ticket.vehicle.model}}  </p>
+
+  {% if ticket.is_valid %}
+  <p>Ticket started: {{ ticket.start }}</p>
+  <p>Ticket is valid until {{ticket.valid_to}}</p>
+  <p>{{ticket.duration_in_minutes}} minutes</p>
+ 
+  {% else %}
+  <p>Ticket is not valid </p>
+  {% endif %}
+  <p>{{ticket.parking_space.id}} PSID</p>
+
+  <p>{{ ticket.price }} INR</p>
+
+
+  {% if ticket.is_valid%}
+  <a href="{% url 'ticket-update' ticket.id %}"> Extend ticket</a>
+  <a href="{% url 'ticket-terminate' ticket.id %}"> Terminate ticket</a>
+  {% endif %}
+  <a href="{% url 'index' %}"> Home </a>
+
+{% endblock %}

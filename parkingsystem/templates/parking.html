@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% block javascript %}
+<script src="{% static 'js/parking/parking.js' %}"></script>
+<script async defer
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAAbm5_fhoMiS2KutHvxdZlTbSf_rpxYcs&callback=initMap">
+  </script>
+<script src="{% static 'js/markerclusterer/markerclusterer.js' %}"></script>
+
+{% endblock%}
+{% block content %}
+
+<h1>Parking</h1>
+
+<!--
+<ul>
+    {% for parking_lot in parking_lots %}
+    <li><a href="{{ parking_lot.get_absolute_url }}">{{parking_lot.id}}</a></li>
+    {% endfor %}
+</ul>
+
+<h2>Standalone Parkingspaces</h2>
+    {% if user.is_staff %}
+    <p><a href="{% url 'standalone-add' %}">Add a parkingspace</a></p>
+    {% endif %}
+<ul>{% for parking in standalone_parking %}
+    <li><a href="{{ parking.get_absolute_url }}">{{parking.id}}</a></li>
+    {%endfor%}
+</ul>
+-->
+<div id="map" class="container"></div>
+
+<script>
+    var locations = [];
+var loc_standalone = [];
+var loc_userowned = [];
+var parking_lot_all = {{ parking_lot_all_json|safe }};
+var standalone = {{ standalone_json|safe }};
+var userowned = {{ userowned_json|safe }};
+
+
+for (i=0;i<parking_lot_all.length;i++) {
+    locations.push([parking_lot_all[i].fields['name'],
+    Number(parking_lot_all[i].fields['latitude']),
+    Number(parking_lot_all[i].fields['longitude']),
+    parking_lot_all[i].fields['price'],
+    parking_lot_all[i].fields['opening_time'],
+    parking_lot_all[i].fields['closing_time'],
+    parking_lot_all[i].fields['capacity_car'],
+    parking_lot_all[i].fields['car_taken'],
+    parking_lot_all[i].pk])
+};
+
+for(i=0;i<standalone.length;i++) {
+    loc_standalone.push([Number(standalone[i][0]), 
+    Number(standalone[i][1]),
+    standalone[i][2], //Price
+    standalone[i][3], //Opening hour
+    standalone[i][4], //closing hour
+    standalone[i][5], // status
+    standalone[i][6]]) //id
+};
+
+for(i=0;i<userowned.length;i++) {
+    loc_userowned.push([Number(userowned[i][0]), 
+    Number(userowned[i][1]), 
+    userowned[i][2], //Price
+    userowned[i][3], //Opening hour
+    userowned[i][4], //closing hour
+    userowned[i][5], // status
+    userowned[i][6]]) //owner
+};
+
+
+// Initialize and add the map
+function initMap() {
+
+    var map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 12,
+        center: new google.maps.LatLng(26.912434,75.787271),
+    });
+
+    var infowindow = new google.maps.InfoWindow();
+    var marker, i;
+    var markers =[];
+    
+    // for Parkinglots
+    for(i=0; i<locations.length;i++) {
+        marker = new google.maps.Marker({
+            position: new google.maps.LatLng(locations[i][1], locations[i][2]),
+            map: map
+        });
+        markers.push(marker);
+
+        google.maps.event.addListener(marker, 'click', (function(marker, i){
+            return function() {
+                var id = locations[i][8];
+                var url = "{% url 'plticket' 0 %}";
+                var href = url.replace('0', id);
+
+                if(locations[i][7] < locations[i][6]){
+                    infowindow.setContent("<p> Parkinglot: " + locations[i][0] + "<br />" +
+                    "Opening hours: " + locations[i][4] + " - " + locations[i][5] + "<br />" +
+                    "Price per hour: " + locations[i][3] + "<br />" +
+                    "Space taken: " + locations[i][7] + " / " + locations[i][6] + "<br />" +
+                    "<a href="+href+"> Buy ticket </a>" +
+                    "</p>");
+                } else {
+                    infowindow.setContent("<p> Parkinglot: " + locations[i][0] + "<br />" +
+                    "Opening hours: " + locations[i][4] + " - " + locations[i][5] + "<br />" +
+                    "Price per hour: " + locations[i][3] + "<br />" +
+                    "Space taken: " + locations[i][7] + " / " + locations[i][6] + "<br />" +
+                    "</p>");
+                }
+                infowindow.open(map, marker);
+            }
+        })(marker, i));
+    }
+    
+    //Standalone
+    for(i=0; i<loc_standalone.length; i++){
+        marker = new google.maps.Marker({
+            position: new google.maps.LatLng(loc_standalone[i][0], loc_standalone[i][1]),
+            map: map
+        });
+        
+        markers.push(marker);
+        google.maps.event.addListener(marker, 'click', (function(marker, i ){
+            return function() {
+                
+                //Creating the correct url for the given parkingspace
+                var id = loc_standalone[i][6];
+                var url = "{% url 'psticket' 0 %}";
+                var href = url.replace('0', id);
+
+
+                if(loc_standalone[i][5] == 'a'){
+                    infowindow.setContent("<p> Open: " + loc_standalone[i][3] + " - " + loc_standalone[i][4] + "<br />" +
+                    "Price per hour: " + loc_standalone[i][2] + "<br/>" +
+                    "Status: Available <br/>" + 
+                    "<a href="+href+"> Buy ticket </a>" +
+                    "</p>"
+                );
+                } else{
+                    infowindow.setContent("<p> Open: " + loc_standalone[i][3] + " - " + loc_standalone[i][4] + "<br />" +
+                    "Price per hour: " + loc_standalone[i][2] + "<br/>" +
+                    "Status: Taken <br/>" + 
+                    "</p>"
+                );
+                }
+                infowindow.open(map, marker);
+            }
+        })(marker, i));
+    }
+    /*
+    //Userowned not needed? only difference compared to standalone is showing owner.. Also creating duplicates.
+    for(i=0; i<loc_userowned.length; i++){
+        marker = new google.maps.Marker({
+            position: new google.maps.LatLng(loc_userowned[i][0], loc_userowned[i][1]),
+            map: map
+        });
+        markers.push(marker);
+        google.maps.event.addListener(marker, 'click', (function(marker, i ){
+            return function() {
+                infowindow.setContent("<p> Open: " + loc_userowned[i][3] + " - " + loc_userowned[i][4] + "<br />" +
+                "Price per hour: " + loc_userowned[i][2] + "<br/>" +
+                "Status: " + loc_userowned[i][5] + "<br/>" +
+                "Owner: " + loc_userowned[i][6] + "<br/>" +
+                "<a href='{% url 'ticket-add' %}'> Buy ticket </a>" +
+                "</p>");
+                infowindow.open(map, marker);
+            }
+        })(marker, i));
+    }
+    */
+    var markerCluster = new MarkerClusterer(map, markers,
+        {imagePath: "{% static 'images/markerclusterer/m' %}"});
+
+}
+</script>
+
+
+{% endblock %}  

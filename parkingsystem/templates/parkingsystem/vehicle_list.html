@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 id="h1-vehicle"></h1>
+    {% if user.is_authenticated %}
+    <div class="row">
+        <div class="col-10">
+            <h1 id="h1-vehicle">My vehicles </h1>
+        </div>
+        <div class="col-2">
+            <a href="{% url 'vehicle-add' %}"> 
+                <div>
+                    <i class="fa fa-plus fa-2x adder-h1"></i>
+                </div>  
+            </a>
+        </div>
+    </div>
+
+    {% if vehicle_list %}
+    <div class="row">
+        {% for vehicle in user.vehicle_set.all %}
+            <div class="col-4">
+                {% if vehicle.car %}
+                <a href="{{ vehicle.get_absolute_url }}">
+                    <div class="index-vehicle">
+                        <i class="fa fa-car fa-3x"></i>
+                        <p>{{ vehicle.registration_number }}</p>
+                    </div>
+                </a>
+                {% elif vehicle.motorbike %}
+                <a href="{{ vehicle.get_absolute_url }}">
+                    <div class="index-vehicle">
+                        <i class="fa fa-motorcycle fa-3x"></i>
+                        <p>{{ vehicle.registration_number }}</p>
+                    </div>
+                </a>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+    {% else %}
+      <p>There are no vehicles in the system.</p>
+    {% endif %}
+    {% else %}
+    <p>You need to <a href="{% url 'login' %}">login</a> to see this</p>
+    {% endif %}       
+{% endblock %}

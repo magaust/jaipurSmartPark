@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Ticket List</h1>
+    {% if user.is_authenticated %}
+
+    {% if ticket_list %}
+    <ul>
+    {% for ticket in user.ticket_set.all %}
+      <li>
+        <a href="{{ ticket.get_absolute_url }}">{{ ticket.id }}</a> 
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+      <p>You have no parking tickets.</p>
+    {% endif %}
+    <a href="{% url 'ticket-add' %}">Buy a new ticket</a>
+    {% else %}
+    <p>You need to <a href="{% url 'login' %}">login</a> to see this</p>
+    {% endif %}       
+{% endblock %}

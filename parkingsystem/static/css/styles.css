@@ -1,0 +1,124 @@
+.sidebar-nav {
+    margin-top: 20px;
+    padding: 0;
+    list-style: none;
+}
+
+#map {
+    height: 600px;  /* The height is 400 pixels */
+    width: 70%;  /* The width is the width of the web page */
+   }
+
+   @media (max-width: 600px) {
+       #map {
+           width: 100%;
+           height: 400px;
+       }
+   }
+
+   @media (min-width: 1200px) {
+    .container{
+        max-width: 870px;
+    }
+}
+
+#h1-vehicle{
+    margin-bottom:10%;
+}
+
+h1, h2 {
+    text-align: center;
+}
+
+#index-h1 {
+    margin-bottom:10%;
+}
+
+.see-more {
+    margin-left: 75%;
+    font-size: 1.2em;
+    text-decoration: underline;
+    margin-top: 2%;
+}
+
+.line {
+    width: 100%;
+    border-bottom: 1px;
+    border-top: 0px;
+    border-style:solid;
+    margin-bottom: 10%;
+    margin-top:10%;
+
+}
+
+.adder {
+    margin-left: -200%;
+    color:green;
+}
+
+.adder-h1 {
+    margin-left: -180%;
+    margin-top: 20%;
+    color:green;
+}
+
+h2 {
+    margin-bottom: 1em;
+}
+
+a {
+    color: #393d3f;
+}
+
+.index-vehicle{
+    height: 150px;
+    text-align: center;
+}
+
+.index-vehicle i {
+    height: 50%;
+    color: #393d3f;
+}
+
+.index-parkingspace {
+    height: 150px;
+    text-align: center;
+}
+
+.index-parkingspace i {
+    height: 50%;
+    color: #393d3f;
+}
+
+.index-ticket {
+    color: #393d3f;
+    text-align: center;
+}
+
+.valid {
+    color: green;
+    text-align: center;
+}
+
+.index-vehicle i {
+    height: 50%;
+}
+
+.profile {
+    width:600px;
+}
+
+P.profileText {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+P.center {
+    text-align: center;
+    font-size: 1em;
+}
+
+#map {
+    margin-left: auto;
+    margin-right: auto;
+}

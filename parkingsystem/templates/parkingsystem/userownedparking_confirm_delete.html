@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Delete parkingspace</h1>
+
+<form  action="{% url 'userparking-delete' userownedparking.id %}" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Save changes</button>
+
+</form>
+
+{% endblock %}
