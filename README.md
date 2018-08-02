@@ -1,4 +1,4 @@
-# Jaipur SmartPArk
+# Jaipur SmartPark
 
 Summer project during my internship at JECRC University
 
